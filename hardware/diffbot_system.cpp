@@ -43,6 +43,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
   cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
   cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
   cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
+  
   if (info_.hardware_parameters.count("pid_p") > 0)
   {
     cfg_.pid_p = std::stoi(info_.hardware_parameters["pid_p"]);
@@ -55,7 +56,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
     RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "PID values not supplied, using defaults.");
   }
   
-
+// cfg_.enc_counts_per_rev
   wheel_l_.setup(cfg_.left_wheel_name, cfg_.enc_counts_per_rev);
   wheel_r_.setup(cfg_.right_wheel_name, cfg_.enc_counts_per_rev);
 
@@ -227,9 +228,10 @@ hardware_interface::return_type diffdrive_arduino ::DiffDriveArduinoHardware::wr
   {
     return hardware_interface::return_type::ERROR;
   }
-
+//wheel_l_.rads_per_count
   int motor_l_counts_per_loop = wheel_l_.cmd / wheel_l_.rads_per_count / cfg_.loop_rate;
   int motor_r_counts_per_loop = wheel_r_.cmd / wheel_r_.rads_per_count / cfg_.loop_rate;
+  RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "cmd: %f, rads per count: %d, loop rate: %d", wheel_l_.cmd, wheel_l_.rads_per_count, cfg_.loop_rate);
   comms_.set_motor_values(motor_l_counts_per_loop, motor_r_counts_per_loop);
   return hardware_interface::return_type::OK;
 }
