@@ -35,7 +35,7 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_init(
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-
+  //read the hardware info parameters and assign them to their appropriate members of the config struct
   cfg_.left_wheel_name = info_.hardware_parameters["left_wheel_name"];
   cfg_.right_wheel_name = info_.hardware_parameters["right_wheel_name"];
   cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
@@ -207,10 +207,11 @@ hardware_interface::return_type DiffDriveArduinoHardware::read(
   comms_.read_encoder_values(wheel_l_.enc, wheel_r_.enc);
 
   double delta_seconds = period.seconds();
-
   double pos_prev = wheel_l_.pos;
+
+  //convert the encoder values into a wheel position in radians around and velocity in radians per second
   wheel_l_.pos = wheel_l_.calc_enc_angle();
-  wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds;
+  wheel_l_.vel = (wheel_l_.pos - pos_prev) / delta_seconds; //(current position value - previous position value) / how much time has passed between them
 
   pos_prev = wheel_r_.pos;
   wheel_r_.pos = wheel_r_.calc_enc_angle();
